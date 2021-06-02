@@ -117,10 +117,10 @@ fastify.post("/", async (request, reply) => {
         request.body.language
       );
       // Return the choices so far - page will build these into a chart
-      let votes = await db.all("SELECT * from Choices");
+      params.options = await db.all("SELECT * from Choices");
       // We send the choices and numbers in parallel arrays
-      params.choices = JSON.stringify(votes.map(choice => choice.language));
-      params.picks = JSON.stringify(votes.map(choice => choice.picks));
+      params.optionNames = JSON.stringify(params.options.map(choice => choice.language));
+      params.optionCounts = JSON.stringify(params.options.map(choice => choice.picks));
     } catch (dbError) {
       console.error(dbError);
       params.error = true;

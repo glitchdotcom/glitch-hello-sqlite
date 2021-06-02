@@ -93,10 +93,10 @@
                 Submissions so far (see the <a href="/logs">Admin</a> page for a log):
               </p>
               <p>
-                <!-- Pass choices + picks arrays from the API to the chart script in page head -->
+                <!-- Pass arrays from the API to the chart script in page head -->
                 <canvas id="myChart"></canvas>
                 <script type="text/javascript">
-                  showChart({{{choices}}}, {{{picks}}});
+                  showChart({{{optionNames}}}, {{{optionCounts}}});
                 </script>
               </p>
               <!-- If the user hasn't already made a choice we show the poll -->
