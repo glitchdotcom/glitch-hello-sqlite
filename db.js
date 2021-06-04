@@ -57,6 +57,7 @@ dbWrapper
 
 // Our server script will call these methods to connect to the db
 module.exports = {
+  
   // Get the options in the database
   getOptions: async () => {
     
@@ -87,11 +88,8 @@ module.exports = {
       );
       
       // Return the choices so far - page will build these into a chart
-      const options = await db.all("SELECT * from Choices");
-      return {
-        names: options.map(choice => choice.language),
-        counts: options.map(choice => choice.picks)
-      }
+      return await db.all("SELECT * from Choices");
+      
     } catch (dbError) {
       console.error(dbError);
     }
