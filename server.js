@@ -36,19 +36,25 @@ if (seo.url === "glitch-default") {
   seo.url = `https://${process.env.PROJECT_DOMAIN}.glitch.me`;
 }
 
-// We use a module for handling database operations in db.js
-var data = require("./db.js");
+// We use a module for handling database operations in /src
+var data = require("./src/data-config.json");
+var db = require("./src/" + data.database);
 
 // Home route for the app
 fastify.get("/", async (request, reply) => {
   // Params is the data we pass to the handlebars templates
   let params = { seo: seo };
-  
-  // Get the available choices from the database
-  params.options = await data.getOptions();
 
+  // Get the available choices from the database
+  const options = await db.getOptions();
+  if (options) {
+    params.optionNames = options.map(choice => choice.language);
+    params.optionCounts = options.map(choice => choice.picks);
+  }
   // Let the user know if there was a db error (the options returned will evaluate to false)
-  params.error = !params.options;
+  else params.error = true;
+
+  // ADD PARAMS FROM README NEXT STEPS HERE
 
   // The page builds the options into the poll form
   reply.view("/src/pages/index.hbs", params);
@@ -57,23 +63,21 @@ fastify.get("/", async (request, reply) => {
 // Route to process user poll pick
 fastify.post("/", async (request, reply) => {
   let params = { seo: seo };
-  
+
   // Flag to indicate we want to show the poll results instead of the poll form
   params.results = true;
   let options;
-  
+
   // We have a vote - send to the db helper to process and return results
-  if (request.body.language) 
-    options = await data.processVote(request.body.language);
-
-  // ADD ELSE STATEMENT FROM NEXT STEPS IN README HERE
-
-  // Make sure we have data to return
-  if (options) {
-    // We send the choices and numbers in parallel arrays
-    params.optionNames = JSON.stringify(options.map(choice => choice.language));
-    params.optionCounts = JSON.stringify(options.map(choice => choice.picks));
-  } else params.error = true; // Let the user know if there's an error
+  if (request.body.language) {
+    options = await db.processVote(request.body.language);
+    if (options) {
+      // We send the choices and numbers in parallel arrays
+      params.optionNames = options.map(choice => choice.language);
+      params.optionCounts = options.map(choice => choice.picks);
+    }
+  }
+  params.error = !options;
 
   // Return the info to the page
   reply.view("/src/pages/index.hbs", params);
@@ -82,13 +86,13 @@ fastify.post("/", async (request, reply) => {
 // Admin endpoint to get logs
 fastify.get("/logs", async (request, reply) => {
   let params = {};
-  
+
   // Get the log history from the db
-  params.optionHistory = await data.getLogs();
-  
+  params.optionHistory = await db.getLogs();
+
   // Let the user know if there's an error
   params.error = !params.optionHistory;
-  
+
   // Return the log list to the page
   reply.view("/src/pages/admin.hbs", params);
 });
@@ -105,17 +109,16 @@ fastify.post("/reset", async (request, reply) => {
     request.body.key !== process.env.ADMIN_KEY
   ) {
     console.error("Auth fail");
-    
+
     // Auth failed, return the log data plus a failed flag
     params.failed = true;
-    
+
     // Get the log list
-    params.optionHistory = await data.getLogs();
+    params.optionHistory = await db.getLogs();
   } else {
-    
     // We have a valid key and can clear the log
-    params.optionHistory = await data.clearHistory();
-    
+    params.optionHistory = await db.clearHistory();
+
     // Check for errors - method would return false value
     params.error = !params.optionHistory;
   }
