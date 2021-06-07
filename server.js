@@ -37,13 +37,13 @@ if (seo.url === "glitch-default") {
 }
 
 // We use a module for handling database operations in /src
-var data = require("./src/data-config.json");
-var db = require("./src/" + data.database);
+const data = require("./src/data.json");
+const db = require("./src/" + data.database);
 
 // Home route for the app
 fastify.get("/", async (request, reply) => {
   // Params is the data we pass to the handlebars templates
-  let params = { seo: seo };
+  let params = request.query.raw ? {} : { seo: seo };
 
   // Get the available choices from the database
   const options = await db.getOptions();
@@ -51,18 +51,23 @@ fastify.get("/", async (request, reply) => {
     params.optionNames = options.map(choice => choice.language);
     params.optionCounts = options.map(choice => choice.picks);
   }
-  // Let the user know if there was a db error (the options returned will evaluate to false)
-  else params.error = true;
+  // Let the user know if there was a db error
+  else params.error = data.errorMessage;
+  // Check in case the data is empty or not setup yet
+  if(options && params.optionNames.length<1) params.setup = data.setupMessage;
 
   // ADD PARAMS FROM README NEXT STEPS HERE
 
-  // The page builds the options into the poll form
-  reply.view("/src/pages/index.hbs", params);
+  // Send the page options or raw data if the client requested it
+  request.query.raw
+    ? reply.send(params)
+    : reply.view("/src/pages/index.hbs", params);
 });
 
 // Route to process user poll pick
 fastify.post("/", async (request, reply) => {
-  let params = { seo: seo };
+  // We only send seo if the client is requesting the front-end ui
+  let params = request.query.raw ? {} : { seo: seo };
 
   // Flag to indicate we want to show the poll results instead of the poll form
   params.results = true;
@@ -77,29 +82,33 @@ fastify.post("/", async (request, reply) => {
       params.optionCounts = options.map(choice => choice.picks);
     }
   }
-  params.error = !options;
+  params.error = options ? null : data.errorMessage;
 
   // Return the info to the page
-  reply.view("/src/pages/index.hbs", params);
+  request.query.raw
+    ? reply.send(params)
+    : reply.view("/src/pages/index.hbs", params);
 });
 
 // Admin endpoint to get logs
 fastify.get("/logs", async (request, reply) => {
-  let params = {};
+  let params = request.query.raw ? {} : { seo: seo };
 
   // Get the log history from the db
   params.optionHistory = await db.getLogs();
 
   // Let the user know if there's an error
-  params.error = !params.optionHistory;
+  params.error = params.optionHistory ? null : data.errorMessage;
 
-  // Return the log list to the page
-  reply.view("/src/pages/admin.hbs", params);
+  // Send the log list
+  request.query.raw
+    ? reply.send(params)
+    : reply.view("/src/pages/admin.hbs", params);
 });
 
 // Admin endpoint to empty all logs - requires auth (instructions in README)
 fastify.post("/reset", async (request, reply) => {
-  let params = {};
+  let params = request.query.raw ? {} : { seo: seo };
 
   // Authenticate the user request by checking against the env key variable
   if (
@@ -111,7 +120,7 @@ fastify.post("/reset", async (request, reply) => {
     console.error("Auth fail");
 
     // Auth failed, return the log data plus a failed flag
-    params.failed = true;
+    params.failed = "You entered invalid credentials!";
 
     // Get the log list
     params.optionHistory = await db.getLogs();
@@ -120,11 +129,16 @@ fastify.post("/reset", async (request, reply) => {
     params.optionHistory = await db.clearHistory();
 
     // Check for errors - method would return false value
-    params.error = !params.optionHistory;
+    params.error = params.optionHistory ? null : data.errorMessage;
   }
 
-  // Log cleared, return an empty array to admin page
-  reply.view("/src/pages/admin.hbs", params);
+  // Send a 401 if auth failed
+  const status = params.failed ? 401 : 200;
+  // Send an unauthorized status code if the user credentials failed
+  request.query.raw
+    ? reply.status(status).send(params)
+    : reply.status(status).view("/src/pages/admin.hbs", params);
+
 });
 
 // Run the server and report out to the logs
