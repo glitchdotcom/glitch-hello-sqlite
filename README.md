@@ -6,6 +6,10 @@ The home page presents the user with a poll where they can choose an option, the
 
 Check out the __Next steps__ to add a link that allows the user to view the results without casting a vote.
 
+## Prerequisites
+
+To get best use out of this project you'll ideally be familiar with JavaScript and have a little Node.js experience–check out [Hello Node](https://glitch.com/~glitch-hello-node) if you haven't already!
+
 ## What's in this project?
 
 ← `README.md`: That’s this file, where you can tell people what your cool website does and how you built it.
@@ -25,6 +29,8 @@ Check out the __Next steps__ to add a link that allows the user to view the resu
 When the app runs, the scripts build the database:
 
 ← `.data/choices.db`: Your database is created and placed in the `.data` folder, a hidden directory whose contents aren’t copied when a project is remixed. You can see the contents of `.data` in the console by selecting __Tools__ >  __Logs__.
+
+___Want to use the server script as an API without using the front-end UI? No problem! Just send a query parameter `raw=true` with your requests, like this :`glitch-hello-sqlite.glitch.me?raw=true`___
 
 ### User interface
 
