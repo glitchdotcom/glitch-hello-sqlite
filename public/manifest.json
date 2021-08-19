@@ -1,0 +1,16 @@
+{
+  "name": "Hello SQLite",
+  "short_name": "Hello SQLite",
+  "description": "Use a persistent SQLite database with your Node.js app",
+  "icons": [
+    {
+      "sizes": "330x330",
+      "type": "image/png",
+      "src": "https://cdn.glitch.com/project-avatar/67d48f87-b878-4afe-81c6-dc588981ce7a.png?2021-05-27T18:05:02.701Z"
+    }
+  ],
+  "display": "standalone",
+  "background_color": "#FFE6F8",
+  "theme_color": "#2800FF",
+  "start_url": "/"
+}

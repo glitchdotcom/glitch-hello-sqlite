@@ -1,17 +1,17 @@
 {
   "name": "hello-sqlite",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A Node app with SQLite database, instantly up and running.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
-    "fastify": "^3.16.2",
-    "fastify-formbody": "^5.0.0",
-    "fastify-static": "^4.2.2",
+    "fastify": "^3.20.2",
+    "fastify-formbody": "^5.1.0",
+    "fastify-static": "^4.2.3",
     "handlebars": "^4.7.7",
-    "point-of-view": "^4.14.0",
+    "point-of-view": "^4.15.0",
     "sqlite": "^4.0.23",
     "sqlite3": "^5.0.2"
   },
