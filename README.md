@@ -32,10 +32,6 @@ When the app runs, the scripts build the database:
 
 ← `public/style.css`: The style rules that define the site appearance.
 
-← `public/manifest.json`: The manifest allows the site to function as a [PWA (Progressive Web App)](https://web.dev/progressive-web-apps/), specifying metadata that determines how the app will appear and behave natively when installed on the user device.
-
-← `sw.js`: The Service Worker JavaScript sets the app up to cache content for fast delivery as a PWA.
-
 ← `src/pages`: The handlebars files that make up the site user interface. The API in `server.js` sends data to these templates to include in the HTML.
 
 ← `src/pages/index.hbs`: The site homepage presents a form when the user first visits. When the visitor submits a preference through the form, the app calls the `POST` endpoint `/`, passing the user selection. The `server.js` endpoint updates the database and returns the user choices submitted so far, which the page presents in a chart (using [Chart.js](https://www.chartjs.org/docs/)–you can see the code in the page `head`).
