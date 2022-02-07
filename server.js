@@ -71,7 +71,7 @@ fastify.get("/", async (request, reply) => {
   if (options && params.optionNames.length < 1)
     params.setup = data.setupMessage;
 
-  // ADD PARAMS FROM README NEXT STEPS HERE
+  // ADD PARAMS FROM TODO HERE
 
   // Send the page options or raw JSON data if the client requested it
   request.query.raw
@@ -175,7 +175,7 @@ fastify.post("/reset", async (request, reply) => {
 });
 
 // Run the server and report out to the logs
-fastify.listen(process.env.PORT, function(err, address) {
+fastify.listen(process.env.PORT, '0.0.0.0', function(err, address) {
   if (err) {
     fastify.log.error(err);
     process.exit(1);
