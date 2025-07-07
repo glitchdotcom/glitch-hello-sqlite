@@ -1,5 +1,7 @@
 # Hello SQLite!
 
+> ⚠️🚨 **Glitch project hosting shuts down on 8th July 2025. This repo contains the source code for the Glitch Hello SQLite starter app – this project is no longer maintained by the Glitch team, but you are welcome to grab the code and use it somewhere else!**
+
 This project includes a [Node.js](https://nodejs.org/en/about/) server script that uses a persistent [SQLite](https://www.sqlite.org) database. The app also includes a front-end with two web pages that connect to the database using the server API. 📊
 
 The home page presents the user with a poll where they can choose an option, then the page presents the results in a chart. The admin page displays the log of past choices and allows the user to clear it by supplying an admin key (you can set this up by following the steps in `TODO.md`). 🔒
